@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Notary {
+  appointments  Appointment[]
+  createdAt     DateTime      @default(now())
+  email         String?
+  id            String        @id @default(cuid())
+  licenseNumber String?
+  name          String?
+  phoneNumber   String?
+  updatedAt     DateTime      @updatedAt
+}
+
+model NotaryServicePerformed {
+  appointment        Appointment? @relation(fields: [appointmentId], references: [id])
+  appointmentId      String?
+  createdAt          DateTime     @default(now())
+  id                 String       @id @default(cuid())
+  serviceCharge      Float?
+  serviceDescription String?
+  updatedAt          DateTime     @updatedAt
+}
+
+model Appointment {
+  client                  String?
+  createdAt               DateTime                 @default(now())
+  date                    DateTime?
+  duration                Int?
+  id                      String                   @id @default(cuid())
+  location                String?
+  notary                  Notary?                  @relation(fields: [notaryId], references: [id])
+  notaryId                String?
+  notaryServicePerformeds NotaryServicePerformed[]
+  notes                   String?
+  status                  EnumAppointmentStatus?
+  time                    DateTime?
+  updatedAt               DateTime                 @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumAppointmentStatus {
+  Option1
+}
